@@ -8,6 +8,9 @@ Highlight staged (quasi-quoted) expressions.
 
 [[screenshot.png]]
 
+We can easily recognize what are evaluated immediately and what are
+quoted.
+
 ** Installation
 
 Require this script
