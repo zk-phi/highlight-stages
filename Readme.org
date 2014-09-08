@@ -1,0 +1,33 @@
+* highlight-stages.el
+
+準クォートをハイライト
+
+Highlight staged (quasi-quoted) expressions.
+
+** Screenshot
+
+[[screenshot.png]]
+
+** Installation
+
+Require this script
+
+: (require 'highlight-stages)
+
+and call function "highlight-stages-lisp-initialize"
+
+: (add-hook 'emacs-lisp-mode-hook 'highlight-stages-lisp-initialize)
+
+** Supported Languages
+
+Currently, Lisp only. But it's not very difficult to extend this
+plug-in to other languages, like MetaOCaml or Template Haskell.
+
+** Customizations
+
+"highlight-stages-lighten-step" defines the strength of
+highlight. Highlight gets brighter when set larger, and darker when
+set smaller. It can also be a negative value.
+
+When "highlight-stages-highlight-real-quote" is non-nil, not only
+quasi-quotes(`) but also "real" quotes(') are highlighted.
