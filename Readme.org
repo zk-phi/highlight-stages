@@ -8,6 +8,8 @@ Highlight staged (quasi-quoted) expressions.
 
 [[screenshot.png]]
 
+[[screenshot2.png]]
+
 We can easily recognize what are evaluated immediately and what are
 quoted.
 
