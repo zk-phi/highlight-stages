@@ -46,7 +46,7 @@
   "highlight staged (quasi-quoted) expressions"
   :group 'emacs)
 
-(defcustom highlight-stages-lighten-step -2
+(defcustom highlight-stages-lighten-step -2.5
   "Staged expressions get STEP percent lighter."
   :group 'highlight-stages)
 
@@ -55,13 +55,17 @@
   highlighted."
   :group 'highlight-stages)
 
+(defcustom highlight-stages-highlight-priority 1
+  "Priority which highlight overlays get."
+  :group 'highlight-stages)
+
 ;; + vars
 
 (defvar highlight-stages-quote-matcher nil
   "A function with 1 parameter, LIMIT, which searches the next
   quoted expression. The function must return non-nil if
   succeeded, or nil otherwise. A special value 'real also can be
-  returned from the function, if the quote is \"real\" (not
+  returned by the function, when the quote is \"real\" (not
   escapable) quote. This may be useful for lisp-like
   languages. When the function returns non-nil, (match-string 0)
   must be the expression matched.")
@@ -74,7 +78,7 @@
 
 ;; + utils
 
-(defun highlight-stages-face (level)
+(defun highlight-stages--face (level)
   "Make a face suitable for λf.(overlay-put ov 'face f)."
   (let ((cache (make-hash-table :test 'eql)))
     (or (gethash level cache)
@@ -85,7 +89,7 @@
                         (* level highlight-stages-lighten-step)))
                  cache))))
 
-(defun highlight-stages-make-overlay (beg end level)
+(defun highlight-stages--make-overlay (beg end level)
   "Make a overlay. Trims existing overlays if necessary."
   (dolist (ov (overlays-in beg end))
     (when (eq (overlay-get ov 'category) 'highlight-stages)
@@ -103,13 +107,14 @@
   ;; we don't need to make an overlay if (level = 0)
   (unless (zerop level)
     (let ((ov (make-overlay beg end)))
-      (overlay-put ov 'face (highlight-stages-face level))
-      (overlay-put ov 'category 'highlight-stages))))
+      (overlay-put ov 'face (highlight-stages--face level))
+      (overlay-put ov 'category 'highlight-stages)
+      (overlay-put ov 'priority highlight-stages-highlight-priority))))
 
 ;; + the highlighter
 
 (defun highlight-stages-jit-highlighter (beg end)
-  "The jit highlighter."
+  "The jit highlighter of highlight-stages."
   (setq beg (progn (goto-char beg)
                    (beginning-of-defun)
                    (skip-syntax-backward "'-") ; skip newlines?
@@ -119,11 +124,11 @@
                    (skip-syntax-forward "'-") ; skip newlines?
                    (point)))
   (remove-overlays beg end 'category 'highlight-stages)
-  (highlight-stages-jit-highlighter-1 beg end 0))
+  (highlight-stages--jit-highlighter-1 beg end 0))
 
-(defun highlight-stages-jit-highlighter-1 (beg end base-level)
+(defun highlight-stages--jit-highlighter-1 (beg end base-level)
   "Scan and highlight this level."
-  (highlight-stages-make-overlay beg end base-level)
+  (highlight-stages--make-overlay beg end base-level)
   (goto-char beg)
   (let (quote escape)
     (while (progn
@@ -143,26 +148,26 @@
              (save-excursion
                (cond ((not (cddr quote))
                       ;; "quasi"-quote -> a staging operator (increment level)
-                      (highlight-stages-jit-highlighter-1
+                      (highlight-stages--jit-highlighter-1
                        (car quote) (cadr quote) (1+ base-level)))
                      ((not (zerop base-level))
                       ;; "real"-quote inside "quasi"-quote -> an ordinary symbol
-                      (highlight-stages-jit-highlighter-1
+                      (highlight-stages--jit-highlighter-1
                        (car quote) (cadr quote) base-level))
                      (t
                       ;; "real"-quote outside "quasi"-quote
                       (when highlight-stages-highlight-real-quote
-                        (highlight-stages-make-overlay (car quote) (cadr quote) 1)))))
+                        (highlight-stages--make-overlay (car quote) (cadr quote) 1)))))
              (goto-char (cadr quote)))
             (t
              (save-excursion
-               (highlight-stages-jit-highlighter-1
+               (highlight-stages--jit-highlighter-1
                 (car escape) (cadr escape) (1- base-level)))
              (goto-char (cadr escape)))))))
 
 ;; + settings for lisp
 
-(defun highlight-stages-lisp-quote-matcher (&optional limit)
+(defun highlight-stages--lisp-quote-matcher (&optional limit)
   (let ((original-pos (point)) syntax realp res)
     (when (search-forward-regexp "`\\|\\(#?'\\)" limit t)
       (setq realp (match-beginning 1))  ; must be done before (syntax-ppss)
@@ -174,13 +179,13 @@
                (set-match-data (list beg end))
                ;; "real" quote or "quasi" quote
                (if realp 'real t)))
-            ((setq res (highlight-stages-lisp-quote-matcher limit))
+            ((setq res (highlight-stages--lisp-quote-matcher limit))
              res)
             (t                          ; not found
              (goto-char original-pos)
              nil)))))
 
-(defun highlight-stages-lisp-escape-matcher (&optional limit)
+(defun highlight-stages--lisp-escape-matcher (&optional limit)
   (let ((original-pos (point)) syntax res)
     (when (search-forward-regexp ",@?" limit t)
       (setq syntax (syntax-ppss))
@@ -190,7 +195,7 @@
                    (end (ignore-errors (forward-sexp 1) (point))))
                (set-match-data (list beg end))
                t))
-            ((setq res (highlight-stages-lisp-escape-matcher limit))
+            ((setq res (highlight-stages--lisp-escape-matcher limit))
              res)
             (t
              (goto-char original-pos)
@@ -200,9 +205,9 @@
   "Setup highlight-stages for Lisp buffers."
   (interactive)
   (set (make-local-variable 'highlight-stages-quote-matcher)
-       'highlight-stages-lisp-quote-matcher)
+       'highlight-stages--lisp-quote-matcher)
   (set (make-local-variable 'highlight-stages-escape-matcher)
-       'highlight-stages-lisp-escape-matcher)
+       'highlight-stages--lisp-escape-matcher)
   (jit-lock-register 'highlight-stages-jit-highlighter))
 
 ;; + provide
