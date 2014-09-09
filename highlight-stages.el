@@ -204,6 +204,7 @@
 (defun highlight-stages-lisp-initialize ()
   "Setup highlight-stages for Lisp buffers."
   (interactive)
+  (jit-lock-mode 1)
   (set (make-local-variable 'highlight-stages-quote-matcher)
        'highlight-stages--lisp-quote-matcher)
   (set (make-local-variable 'highlight-stages-escape-matcher)
