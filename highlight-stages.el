@@ -50,7 +50,7 @@
   "Staged expressions get STEP percent lighter."
   :group 'highlight-stages)
 
-(defcustom highlight-stages-highlight-real-quote nil
+(defcustom highlight-stages-highlight-real-quote t
   "If non-nil, \"real\" (not escapable) quotes are also
   highlighted."
   :group 'highlight-stages)
