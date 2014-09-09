@@ -202,6 +202,7 @@
              (goto-char original-pos)
              nil)))))
 
+;;;###autoload
 (defun highlight-stages-lisp-initialize ()
   "Setup highlight-stages for Lisp buffers."
   (interactive)
