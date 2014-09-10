@@ -193,7 +193,8 @@
       (cond ((and (not (nth 3 syntax))  ; NOT in string
                   (not (nth 4 syntax))) ; NOT in comment
              (let ((beg (point))
-                   (end (ignore-errors (forward-sexp 1) (point))))
+                   (end (progn (ignore-errors (forward-sexp 1))
+                               (point))))
                (set-match-data (list beg end))
                t))
             ((setq res (highlight-stages--lisp-escape-matcher limit))
