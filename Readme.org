@@ -13,15 +13,27 @@ Highlight staged (quasi-quoted) expressions.
 We can easily recognize what are evaluated now and what are quoted for
 later evaluation.
 
+** NOTE: IMCOMPATIBLE CHANGES IN VERSION 1.0.1
+
+highlight-stages is now a minor-mode.
+
+please call =highlight-stages-mode= instead of
+=highlight-stages-lisp-initialize= to enable highlight-stages.
+
 ** Installation
 
 Require this script
 
 : (require 'highlight-stages)
 
-and call function "highlight-stages-lisp-initialize"
+and call function "highlight-stages-mode"
 
-: (add-hook 'emacs-lisp-mode-hook 'highlight-stages-lisp-initialize)
+: (add-hook 'emacs-lisp-mode-hook 'highlight-stages-mode)
+
+If you want to enable "highlight-stages-mode" (almost) everywhere,
+call "highlight-stages-global-mode" instead.
+
+: (highlight-stages-global-mode 1)
 
 ** Supported Languages
 
