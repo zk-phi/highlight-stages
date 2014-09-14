@@ -51,6 +51,8 @@
   '((lisp-mode
      highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
     (emacs-lisp-mode
+     highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
+    (lisp-interaction-mode
      highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher))
   "List of (MAJOR-MODE . (QUOTE-MATCHER . ESCAPE-MATCHER)).
 
