@@ -6,11 +6,9 @@ Highlight staged (quasi-quoted) expressions.
 
 ** Screenshot
 
-[[screenshot.png]]
-
 Lisp.
 
-[[screenshot3.png]]
+[[screenshot.png]]
 
 MetaOCaml.
 
