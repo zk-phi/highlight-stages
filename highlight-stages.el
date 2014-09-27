@@ -53,7 +53,11 @@
     (emacs-lisp-mode
      highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
     (lisp-interaction-mode
-     highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher))
+     highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
+    (ocaml-mode
+     highlight-stages-metaocaml-quote-matcher . highlight-stages-metaocaml-matcher-escape)
+    (tuareg-mode
+     highlight-stages-metaocaml-quote-matcher . highlight-stages-metaocaml-escape-matcher))
   "List of (MAJOR-MODE . (QUOTE-MATCHER . ESCAPE-MATCHER)).
 
 QUOTE-MATCHER is a function with 1 parameter, LIMIT, which
@@ -193,16 +197,46 @@ non-nil, (match-string 0) must be the expression matched.")
 (defun highlight-stages-lisp-quote-matcher (&optional limit)
   (when (highlight-stages--search-forward-regexp "`\\|\\(#?'\\)" limit)
     (prog1 (if (match-beginning 1) 'real t)
-      (set-match-data (list (point) (progn (ignore-errors (forward-sexp 1))
-                                           (point)))))))
+      (set-match-data
+       (list (point)
+             (progn (ignore-errors (forward-sexp 1)) (point)))))))
 
 (defun highlight-stages-lisp-escape-matcher (&optional limit)
   (when (highlight-stages--search-forward-regexp ",@?" limit)
-    (set-match-data (list (point) (progn (ignore-errors (forward-sexp 1))
-                                         (point))))
+    (set-match-data
+     (list (point)
+           (progn (ignore-errors (forward-sexp 1)) (point))))
     t))
 
-;; the mode
+;; + matchers for metaocaml
+
+(defun highlight-stages-metaocaml-quote-matcher (&optional limit)
+  (when (highlight-stages--search-forward-regexp "\\.<" limit)
+    (let ((beg (point))
+          (level 0))
+      (while (and (highlight-stages--search-forward-regexp "\\(\\.<\\)\\|\\(>\\.\\)")
+                  (progn (cond ((match-beginning 1)
+                                (setq level (1+ level)))
+                               ((match-beginning 2)
+                                (setq level (1- level))))
+                         (>= level 0))))
+      (set-match-data
+       (list beg
+             (if (>= level 0) (point-max) (match-beginning 0))))
+      t)))
+
+(defun highlight-stages-metaocaml-escape-matcher (&optional limit)
+  (when (highlight-stages--search-forward-regexp "\\.~" limit)
+    (set-match-data
+     (list (point)
+           (cond ((looking-at "\\(\\s.\\|\\s_\\)+\\(?:[\s\t\n]\\|$\\)") ; not a sexp
+                  (goto-char (match-end 1)))
+                 (t
+                  (ignore-errors (forward-sexp 1))
+                  (point)))))
+    t))
+
+;; + the mode
 
 ;;;###autoload
 (define-minor-mode highlight-stages-mode
