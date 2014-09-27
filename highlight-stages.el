@@ -18,7 +18,7 @@
 
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
-;; Version: 1.0.1
+;; Version: 1.0.2
 
 ;;; Commentary:
 
@@ -34,12 +34,13 @@
 
 ;; 1.0.0 first released
 ;; 1.0.1 turned into minor-mode
+;; 1.0.2 add MetaOCaml support
 
 ;;; Code:
 
 (require 'color)
 
-(defconst highlight-stages-version "1.0.1")
+(defconst highlight-stages-version "1.0.2")
 
 ;; + customs
 
