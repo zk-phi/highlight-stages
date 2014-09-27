@@ -117,7 +117,20 @@ non-nil, (match-string 0) must be the expression matched.")
       (overlay-put ov 'category 'highlight-stages)
       (overlay-put ov 'priority highlight-stages-highlight-priority))))
 
-;; + the highlighter
+(defun highlight-stages--search-forward-regexp (regexp &optional limit)
+  "Like (search-forward-regexp REGEXP LIMIT t) but skips comments
+  and strings."
+  (let ((original-pos (point)) syntax)
+    (catch 'found
+      (while (search-forward-regexp regexp limit t)
+        (setq syntax (save-match-data (syntax-ppss)))
+        (when (and (not (nth 3 syntax))
+                   (not (nth 4 syntax)))
+          (throw 'found (point))))
+      (goto-char original-pos)
+      nil)))
+
+;; + the jit highlighter
 
 (defun highlight-stages-jit-highlighter (beg end)
   "The jit highlighter of highlight-stages."
@@ -175,43 +188,21 @@ non-nil, (match-string 0) must be the expression matched.")
                   (car escape) (cadr escape) (1- base-level)))
                (goto-char (cadr escape))))))))
 
-;; + settings for lisp
+;; + matchers for lisp
 
 (defun highlight-stages-lisp-quote-matcher (&optional limit)
-  (let ((original-pos (point)) syntax realp res)
-    (when (search-forward-regexp "`\\|\\(#?'\\)" limit t)
-      (setq realp (match-beginning 1))  ; must be done before (syntax-ppss)
-      (setq syntax (syntax-ppss))
-      (cond ((and (not (nth 3 syntax))  ; NOT in string
-                  (not (nth 4 syntax))) ; NOT in comment
-             (let ((beg (point))
-                   (end (progn (ignore-errors (forward-sexp 1))
-                               (point))))
-               (set-match-data (list beg end))
-               ;; "real" quote or "quasi" quote
-               (if realp 'real t)))
-            ((setq res (highlight-stages-lisp-quote-matcher limit))
-             res)
-            (t                          ; not found
-             (goto-char original-pos)
-             nil)))))
+  (when (highlight-stages--search-forward-regexp "`\\|\\(#?'\\)" limit)
+    (prog1 (if (match-beginning 1) 'real t)
+      (set-match-data (list (point) (progn (ignore-errors (forward-sexp 1))
+                                           (point)))))))
 
 (defun highlight-stages-lisp-escape-matcher (&optional limit)
-  (let ((original-pos (point)) syntax res)
-    (when (search-forward-regexp ",@?" limit t)
-      (setq syntax (syntax-ppss))
-      (cond ((and (not (nth 3 syntax))  ; NOT in string
-                  (not (nth 4 syntax))) ; NOT in comment
-             (let ((beg (point))
-                   (end (progn (ignore-errors (forward-sexp 1))
-                               (point))))
-               (set-match-data (list beg end))
-               t))
-            ((setq res (highlight-stages-lisp-escape-matcher limit))
-             res)
-            (t
-             (goto-char original-pos)
-             nil)))))
+  (when (highlight-stages--search-forward-regexp ",@?" limit)
+    (set-match-data (list (point) (progn (ignore-errors (forward-sexp 1))
+                                         (point))))
+    t))
+
+;; the mode
 
 ;;;###autoload
 (define-minor-mode highlight-stages-mode
