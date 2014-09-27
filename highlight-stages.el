@@ -55,6 +55,14 @@
      highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
     (lisp-interaction-mode
      highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
+    (scheme-mode
+     highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
+    (gauche-mode
+     highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
+    (racket-mode
+     highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
+    (clojure-mode
+     highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
     (ocaml-mode
      highlight-stages-metaocaml-quote-matcher . highlight-stages-metaocaml-matcher-escape)
     (tuareg-mode
