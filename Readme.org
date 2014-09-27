@@ -10,7 +10,7 @@ Highlight staged (quasi-quoted) expressions.
 
 Lisp.
 
-[[screenshot3.jpg]]
+[[screenshot3.png]]
 
 MetaOCaml.
 
