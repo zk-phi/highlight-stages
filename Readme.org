@@ -8,6 +8,12 @@ Highlight staged (quasi-quoted) expressions.
 
 [[screenshot.png]]
 
+Lisp.
+
+[[screenshot3.jpg]]
+
+MetaOCaml.
+
 [[screenshot2.png]]
 
 We can easily recognize what are evaluated now and what are quoted for
@@ -37,8 +43,8 @@ call "highlight-stages-global-mode" instead.
 
 ** Supported Languages
 
-Currently, Lisp only. But it's not very difficult to extend this
-plug-in to other languages, like MetaOCaml or Template Haskell.
+Lisp and MetaOCaml only. But it's not very difficult to extend this
+plug-in to other languages, Template Haskell for example.
 
 ** Customizations
 
