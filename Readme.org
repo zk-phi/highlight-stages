@@ -54,9 +54,15 @@ Lisp-like languages and MetaOCaml
 
 ** Customizations
 
-"highlight-stages-lighten-step" defines the strength of
-highlight. Highlight gets brighter when set larger, and darker when
-set smaller. It can also be a negative value.
+5 faces
 
-When "highlight-stages-highlight-real-quote" is non-nil, not only
+- =highlight-stages-negative-level-face=
+- =highlight-stages-level-1-face=
+- =highlight-stages-level-2-face=
+- =highlight-stages-level-3-face=
+- =highlight-stages-higher-level-face=
+
+are all customizable.
+
+When =highlight-stages-highlight-real-quote= is non-nil, not only
 quasi-quotes(`) but also "real" quotes(') are highlighted.
