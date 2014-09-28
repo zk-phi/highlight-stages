@@ -41,8 +41,7 @@ call "highlight-stages-global-mode" instead.
 
 ** Supported Languages
 
-Lisp and MetaOCaml only. But it's not very difficult to extend this
-plug-in to other languages, Template Haskell for example.
+Lisp-like languages and MetaOCaml
 
 ** Customizations
 
