@@ -18,7 +18,7 @@
 
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
-;; Version: 1.0.2
+;; Version: 1.0.3
 
 ;;; Commentary:
 
@@ -35,12 +35,13 @@
 ;; 1.0.0 first released
 ;; 1.0.1 turned into minor-mode
 ;; 1.0.2 add MetaOCaml support
+;; 1.0.3 use faces instead of calculating background colors
 
 ;;; Code:
 
-(require 'color)
+(require 'cl-lib)
 
-(defconst highlight-stages-version "1.0.2")
+(defconst highlight-stages-version "1.0.3")
 
 ;; + customs
 
@@ -95,18 +96,47 @@ non-nil, (match-string 0) must be the expression matched.")
   "Priority which highlight overlays get."
   :group 'highlight-stages)
 
+;; + faces
+
+(defface highlight-stages-negative-level-face
+  '((((background light)) (:background "#fefaf1"))
+    (t (:background "#003745")))
+  "Face used to highlight staged expressions.")
+
+(defface highlight-stages-level-1-face
+  '((((background light)) (:background "#fbf1d4"))
+    (t (:background "#001e26")))
+  "Face used to highlight staged expressions.")
+
+(defface highlight-stages-level-2-face
+  '((((background light)) (:background "#faecc6"))
+    (t (:background "#001217")))
+  "Face used to highlight staged expressions.")
+
+(defface highlight-stages-level-3-face
+  '((((background light)) (:background "#f9e8b8"))
+    (t (:background "#000608")))
+  "Face used to highlight staged expressions.")
+
+(defface highlight-stages-higher-level-face
+  '((((background light)) (:background "#f8e3a9"))
+    (t (:background "#000000")))
+  "Face used to highlight staged expressions.")
+
 ;; + utils
 
 (defun highlight-stages--face (level)
-  "Make a face suitable for λf.(overlay-put ov 'face f)."
-  (let ((cache (make-hash-table :test 'eql)))
-    (or (gethash level cache)
-        (puthash level
-                 (cons 'background-color
-                       (color-lighten-name
-                        (face-background 'default)
-                        (* level highlight-stages-lighten-step)))
-                 cache))))
+  "Choose a face for LEVEL."
+  (cond ((< level 0)
+         'highlight-stages-negative-level-face)
+        ((= level 1)
+         'highlight-stages-level-1-face)
+        ((= level 2)
+         'highlight-stages-level-2-face)
+        ((= level 3)
+         'highlight-stages-level-3-face)
+        ((> level 3)
+         'highlight-stages-higher-level-face)))
 
 (defun highlight-stages--make-overlay (beg end level)
   "Make a overlay. Trims existing overlays if necessary."

@@ -17,12 +17,21 @@ MetaOCaml.
 We can easily recognize what are evaluated now and what are quoted for
 later evaluation.
 
-** NOTE: INCOMPATIBLE CHANGES IN VERSION 1.0.1
+** NOTE: INCOMPATIBLE CHANGES IN VERSION 1.0.3
 
-highlight-stages is now a minor-mode.
+highlight-stages now uses 5 fully customizable faces
 
-please call =highlight-stages-mode= instead of
-=highlight-stages-lisp-initialize= to enable highlight-stages.
+- =highlight-stages-negative-level-face=
+- =highlight-stages-level-1-face=
+- =highlight-stages-level-2-face=
+- =highlight-stages-level-3-face=
+- =highlight-stages-higher-level-face=
+
+to highlight stages, instead of generating temporary faces from
+=highlight-stages-lighten-step= (fix issue #1).
+
+Please configure these faces instead of setting
+=highlight-stages-lighten-step=.
 
 ** Installation
 
