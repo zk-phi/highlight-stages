@@ -123,19 +123,15 @@ non-nil, (match-string 0) must be the expression matched.")
 
 (defun highlight-stages--face (level)
   "Choose a face for LEVEL."
-  (cond ((< level 0)
-         'highlight-stages-negative-level-face)
-        ((= level 1)
-         'highlight-stages-level-1-face)
-        ((= level 2)
-         'highlight-stages-level-2-face)
-        ((= level 3)
-         'highlight-stages-level-3-face)
-        ((> level 3)
-         'highlight-stages-higher-level-face)))
+  (cond ((< level 0) 'highlight-stages-negative-level-face)
+        ((= level 1) 'highlight-stages-level-1-face)
+        ((= level 2) 'highlight-stages-level-2-face)
+        ((= level 3) 'highlight-stages-level-3-face)
+        ((> level 3) 'highlight-stages-higher-level-face)))
 
 (defun highlight-stages--make-overlay (beg end level)
   "Make a overlay. Trims existing overlays if necessary."
+  ;; split or delete old overlay
   (dolist (ov (overlays-in beg end))
     (when (eq (overlay-get ov 'category) 'highlight-stages)
       (let ((ov-beg (overlay-start ov))
