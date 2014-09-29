@@ -83,10 +83,6 @@ searches the next escaped expression. The function must return
 non-nil if succeeded, or nil otherwise. When the function returns
 non-nil, (match-string 0) must be the expression matched.")
 
-(defcustom highlight-stages-lighten-step -2.5
-  "Staged expressions get STEP percent lighter."
-  :group 'highlight-stages)
-
 (defcustom highlight-stages-highlight-real-quote t
   "If non-nil, \"real\" (not escapable) quotes are also
   highlighted."
