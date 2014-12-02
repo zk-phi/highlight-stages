@@ -18,15 +18,14 @@
 
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
-;; Version: 1.0.3
+;; Version: 1.1.0
 
 ;;; Commentary:
 
-;; Require this script and call function
-;; "highlight-stages-lisp-initialize".
+;; Require this script and call function "highlight-stages-global-mode"
 ;;
 ;;   (require 'highlight-stages)
-;;   (add-hook 'emacs-lisp-mode-hook 'highlight-stages-lisp-initialize)
+;;   (highlight-stages-global-mode 1)
 
 ;; For more informations, see Readme.
 
@@ -36,12 +35,13 @@
 ;; 1.0.1 turned into minor-mode
 ;; 1.0.2 add MetaOCaml support
 ;; 1.0.3 use faces instead of calculating background colors
+;; 1.1.0 C/C++ preprocessor support
 
 ;;; Code:
 
 (require 'cl-lib)
 
-(defconst highlight-stages-version "1.0.3")
+(defconst highlight-stages-version "1.1.0")
 
 ;; + customs
 
@@ -67,8 +67,14 @@
     (ocaml-mode
      highlight-stages-metaocaml-quote-matcher . highlight-stages-metaocaml-matcher-escape)
     (tuareg-mode
-     highlight-stages-metaocaml-quote-matcher . highlight-stages-metaocaml-escape-matcher))
-  "List of (MAJOR-MODE . (QUOTE-MATCHER . ESCAPE-MATCHER)).
+     highlight-stages-metaocaml-quote-matcher . highlight-stages-metaocaml-escape-matcher)
+    (c-mode
+     highlight-stages-c-preprocessor-matcher . nil)
+    (c++-mode
+     highlight-stages-c-preprocessor-matcher . nil)
+    (objc-mode
+     highlight-stages-c-preprocessor-matcher . nil))
+  "List of (MAJOR-MODE . (QUOTE-MATCHER . [ESCAPE-MATCHER])).
 
 QUOTE-MATCHER is a function with 1 parameter, LIMIT, which
 searches the next quoted expression. The function must return
@@ -188,7 +194,7 @@ non-nil, (match-string 0) must be the expression matched.")
          (quote-matcher (cadr pair))
          (escape-matcher (cddr pair))
          quote escape)
-    (when (and quote-matcher escape-matcher)
+    (when quote-matcher
       (while (progn
                (setq quote (save-excursion
                              ;; 'real means "real" (non-"quasi") quote
@@ -198,7 +204,7 @@ non-nil, (match-string 0) must be the expression matched.")
                                      (res
                                       (list (match-beginning 0) (match-end 0))))))
                      escape (save-excursion
-                              (when (funcall escape-matcher end)
+                              (when (and escape-matcher (funcall escape-matcher end))
                                 (list (match-beginning 0) (match-end 0)))))
                (or quote escape))
         (cond ((or (null escape)
@@ -266,6 +272,13 @@ non-nil, (match-string 0) must be the expression matched.")
                   (ignore-errors (forward-sexp 1))
                   (point)))))
     t))
+
+;; + matchers for C/C++/Objc
+
+(defun highlight-stages-c-preprocessor-matcher (&optional limit)
+  ;; we need to return 'real not to fall into an infinite recursion
+  (and (highlight-stages--search-forward-regexp "^#\\(?:.*\\\\\n\\)*.*$" limit)
+       'real))
 
 ;; + the mode
 
