@@ -277,7 +277,7 @@ non-nil, (match-string 0) must be the expression matched.")
 
 (defun highlight-stages-c-preprocessor-matcher (&optional limit)
   ;; we need to return 'real not to fall into an infinite recursion
-  (and (highlight-stages--search-forward-regexp "^#\\(?:.*\\\\\n\\)*.*$" limit)
+  (and (highlight-stages--search-forward-regexp "^[\s\t]*#\\(?:.*\\\\\n\\)*.*$" limit)
        'real))
 
 ;; + the mode
