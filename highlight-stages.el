@@ -1,6 +1,6 @@
 ;;; highlight-stages.el --- highlight staged (quasi-quoted) expressions
 
-;; Copyright (C) 2014 zk_phi
+;; Copyright (C) 2014-2015 zk_phi
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -290,7 +290,8 @@ non-nil, (match-string 0) must be the expression matched.")
   :global nil
   (if highlight-stages-mode
       (jit-lock-register 'highlight-stages-jit-highlighter)
-    (jit-lock-unregister 'highlight-stages-jit-highlighter)))
+    (jit-lock-unregister 'highlight-stages-jit-highlighter)
+    (remove-overlays (point-min) (point-max) 'category 'highlight-stages)))
 
 ;;;###autoload
 (define-globalized-minor-mode highlight-stages-global-mode
