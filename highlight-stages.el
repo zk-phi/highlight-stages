@@ -63,7 +63,7 @@
     (racket-mode
      highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
     (clojure-mode
-     highlight-stages-lisp-quote-matcher . highlight-stages-lisp-escape-matcher)
+     highlight-stages-lisp-quote-matcher . highlight-stages-clojure-escape-matcher)
     (ocaml-mode
      highlight-stages-metaocaml-quote-matcher . highlight-stages-metaocaml-matcher-escape)
     (tuareg-mode
@@ -243,6 +243,15 @@ non-nil, (match-string 0) must be the expression matched.")
     (set-match-data
      (list (point)
            (progn (ignore-errors (forward-sexp 1)) (point))))
+    t))
+
+;; + matchers for clojure
+
+(defun highlight-stages-clojure-escape-matcher (&optional limit)
+  (when (highlight-stages--search-forward-regexp "~@?" limit)
+    (set-match-data
+     (list (point)
+	   (progn (ignore-errors (forward-sexp 1)) (point))))
     t))
 
 ;; + matchers for metaocaml
