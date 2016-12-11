@@ -232,8 +232,11 @@ non-nil, (match-string 0) must be the expression matched.")
 ;; + matchers for lisp
 
 (defun highlight-stages-lisp-quote-matcher (&optional limit)
-  (when (highlight-stages--search-forward-regexp "`\\|\\(#?'\\)" limit)
+  (when (highlight-stages--search-forward-regexp "`\\|(backquote\\|\\(#?'\\|(quote\\)" limit)
     (prog1 (if (match-beginning 1) 'real t)
+      ;; Skip over whitespace between quote and argument
+      (when (looking-at-p "[[:space:]\n\t]")
+        (highlight-stages--search-forward-regexp "[[:space:]\n\t]+"))
       (set-match-data
        (list (point)
              (progn (ignore-errors (forward-sexp 1)) (point)))))))
