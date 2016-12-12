@@ -232,21 +232,25 @@ non-nil, (match-string 0) must be the expression matched.")
 ;; + matchers for lisp
 
 (defun highlight-stages-lisp-quote-matcher (&optional limit)
-  (when (highlight-stages--search-forward-regexp "`\\|(backquote\\|\\(#?'\\|(quote\\)" limit)
+  (or
+   (when (highlight-stages--search-forward-regexp "`\\|(backquote[[:space:]]\\|\\(#?'\\|(quote[[:space:]]\\)" limit)
     (prog1 (if (match-beginning 1) 'real t)
       ;; Skip over whitespace between quote and argument
       (when (looking-at-p "[[:space:]\n\t]")
         (highlight-stages--search-forward-regexp "[[:space:]\n\t]+"))
       (set-match-data
        (list (point)
-             (progn (ignore-errors (forward-sexp 1)) (point)))))))
+             (progn (ignore-errors (forward-sexp 1)) (point))))))))
 
 (defun highlight-stages-lisp-escape-matcher (&optional limit)
-  (when (highlight-stages--search-forward-regexp ",@?" limit)
-    (set-match-data
-     (list (point)
-           (progn (ignore-errors (forward-sexp 1)) (point))))
-    t))
+  (when (highlight-stages--search-forward-regexp "\\([^\\],@?[[:space:]]*\\|[^\\](\\\\,@?[[:space:]]+\\)" limit)
+     ;; Skip over whitespace between comma and argument
+     (when (looking-at-p "[[:space:]\n\t]")
+       (highlight-stages--search-forward-regexp "[[:space:]\n\t]+"))
+     (set-match-data
+      (list (point)
+            (progn (ignore-errors (forward-sexp 1)) (point))))
+     t))
 
 ;; + matchers for clojure
 
