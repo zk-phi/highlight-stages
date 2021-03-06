@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 ;;; highlight-stages.el --- highlight staged (quasi-quoted) expressions
 
 ;; Copyright (C) 2014-2015 zk_phi
